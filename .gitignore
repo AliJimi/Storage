@@ -4,6 +4,7 @@
 .idea/
 .venv/
 venv/
+migrations/
 
 ### OSX ###
 .DS_Store

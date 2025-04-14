@@ -1,0 +1,119 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Delete Nutrition Data for {{ nutrition.product.name }} - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'nutrition_list' %}">Nutrition Data</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'nutrition_detail' nutrition.id %}">{{ nutrition.product.name }}</a></li>
+            <li class="breadcrumb-item active">Delete</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-trash"></i> Delete Nutrition Data
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if nutrition.batches.exists %}
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> Cannot Delete!
+                    </h4>
+                    <p>
+                        This nutrition data cannot be deleted because it is being used by one or more batches as a nutrition override. You must first update those batches to use a different nutrition data or remove the override.
+                    </p>
+                    <hr>
+                    <h5>Affected Batches:</h5>
+                    <ul>
+                        {% for batch in nutrition.batches.all %}
+                            <li>
+                                <a href="{% url 'batch_detail' batch.id %}">Batch #{{ batch.id }}</a> of {{ batch.product.name }}
+                                (Quantity: {{ batch.quantity }})
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <hr>
+                    <p class="mb-0">
+                        <a href="{% url 'nutrition_detail' nutrition.id %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> Back to Nutrition Data
+                        </a>
+                    </p>
+                </div>
+            {% elif nutrition.product.nutrition == nutrition %}
+                <div class="alert alert-warning">
+                    <h4 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> Warning!
+                    </h4>
+                    <p>
+                        This is the primary nutrition data for <strong>{{ nutrition.product.name }}</strong>. Deleting it will remove all nutritional information for this product.
+                    </p>
+                    <hr>
+                    <p>
+                        Are you sure you want to delete the nutrition data for <strong>{{ nutrition.product.name }}</strong>?
+                        This action cannot be undone.
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Yes, Delete
+                            </button>
+                            <a href="{% url 'nutrition_detail' nutrition.id %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    <h4 class="alert-heading">
+                        <i class="bi bi-exclamation-triangle"></i> Warning!
+                    </h4>
+                    <p>
+                        Are you sure you want to delete the nutrition data for <strong>{{ nutrition.product.name }}</strong>?
+                        This action cannot be undone.
+                    </p>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Serving Size:</strong> {{ nutrition.serving_size }}<br>
+                            <strong>Calories:</strong> {{ nutrition.calories_per_serving }} per serving<br>
+                            <strong>Protein:</strong> {{ nutrition.protein_per_serving }}<br>
+                            <strong>Fat:</strong> {{ nutrition.fat_per_serving }}<br>
+                            <strong>Carbs:</strong> {{ nutrition.carbs_per_serving }}<br>
+                        </div>
+                        <div class="col-md-6">
+                            {% if nutrition.ingredients %}
+                                <strong>Ingredients:</strong> {{ nutrition.ingredients|truncatewords:10 }}<br>
+                            {% endif %}
+                            {% if nutrition.allergens %}
+                                <strong>Allergens:</strong> {{ nutrition.allergens|truncatewords:10 }}<br>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Yes, Delete
+                        </button>
+                        <a href="{% url 'nutrition_detail' nutrition.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

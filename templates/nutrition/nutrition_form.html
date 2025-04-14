@@ -1,0 +1,123 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if nutrition %}Edit{% else %}Add{% endif %} Nutrition Data - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'nutrition_list' %}">Nutrition Data</a></li>
+            <li class="breadcrumb-item active">{% if nutrition %}Edit{% else %}Add{% endif %} Nutrition Data</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-{% if nutrition %}pencil{% else %}plus-circle{% endif %}"></i>
+                {{ title }}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">Basic Information</h6>
+                            </div>
+                            <div class="card-body">
+                                {% for field in form %}
+                                    {% if field.name in 'product,serving_size' %}
+                                        {{ field|crispy }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">Per Serving Values</h6>
+                            </div>
+                            <div class="card-body">
+                                {% for field in form %}
+                                    {% if field.name in 'calories_per_serving,protein_per_serving,fat_per_serving,carbs_per_serving' %}
+                                        {{ field|crispy }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-dark">
+                                <h6 class="mb-0">Total Package Values</h6>
+                            </div>
+                            <div class="card-body">
+                                {% for field in form %}
+                                    {% if field.name in 'calories_total,protein_total,fat_total,carbs_total' %}
+                                        {{ field|crispy }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0">Ingredients & Allergens</h6>
+                            </div>
+                            <div class="card-body">
+                                {% for field in form %}
+                                    {% if field.name in 'ingredients,allergens' %}
+                                        {{ field|crispy }}
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Save
+                    </button>
+                    <a href="{% if nutrition %}{% url 'nutrition_detail' nutrition.id %}{% else %}{% url 'nutrition_list' %}{% endif %}" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // When per serving values change, update total values based on servings
+        const servingSizeField = document.querySelector('#id_serving_size');
+        
+        const caloriesPerServingField = document.querySelector('#id_calories_per_serving');
+        const proteinPerServingField = document.querySelector('#id_protein_per_serving');
+        const fatPerServingField = document.querySelector('#id_fat_per_serving');
+        const carbsPerServingField = document.querySelector('#id_carbs_per_serving');
+        
+        const caloriesTotalField = document.querySelector('#id_calories_total');
+        const proteinTotalField = document.querySelector('#id_protein_total');
+        const fatTotalField = document.querySelector('#id_fat_total');
+        const carbsTotalField = document.querySelector('#id_carbs_total');
+        
+        // When the serving fields change, we could calculate totals
+        // But we'll leave this as manual entry for now since we don't
+        // know the total servings per package from the UI
+    });
+</script>
+{% endblock %}

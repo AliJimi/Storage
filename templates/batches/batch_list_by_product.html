@@ -1,0 +1,178 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Batches for {{ product.name }} - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'batch_list' %}">Batches</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'product_detail' product.id %}">{{ product.name }}</a></li>
+            <li class="breadcrumb-item active">Batches</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-boxes"></i> Batches for {{ product.name }}
+        </h1>
+        <div>
+            <a href="{% url 'batch_create' %}?product_id={{ product.id }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Batch
+            </a>
+            <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-secondary">
+                <i class="bi bi-box"></i> View Product
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Product Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded mb-3">
+                            {% else %}
+                                <div class="text-center p-4 bg-light rounded mb-3">
+                                    <i class="bi bi-box" style="font-size: 4rem;"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-9">
+                            <h4>{{ product.name }}</h4>
+                            <p>
+                                <strong>Category:</strong> {{ product.get_category_display }}<br>
+                                <strong>Barcode:</strong> {{ product.barcode }}<br>
+                                {% if product.is_edible %}
+                                    <span class="badge bg-success">Edible</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Non-Edible</span>
+                                {% endif %}
+                            </p>
+                            {% if product.description %}
+                                <p>{{ product.description|truncatewords:30 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Inventory Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h3>{{ product.total_quantity }}</h3>
+                            <p class="text-muted">Total Units</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>{{ batches|length }}</h3>
+                            <p class="text-muted">Active Batches</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h3>${{ total_value|default:'0.00'|floatformat:2 }}</h3>
+                            <p class="text-muted">Total Value</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ title }}</h5>
+            <a href="{% url 'batch_create' %}?product_id={{ product.id }}" class="btn btn-sm btn-light">
+                <i class="bi bi-plus-circle"></i> Add Batch
+            </a>
+        </div>
+        <div class="card-body">
+            {% if batches %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Batch ID</th>
+                                <th>Quantity</th>
+                                <th>Expiration Date</th>
+                                <th>Location</th>
+                                <th>Sale Price</th>
+                                <th>Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in batches %}
+                                <tr>
+                                    <td>{{ batch.id }}</td>
+                                    <td>{{ batch.quantity }}</td>
+                                    <td class="expiration-date" data-date="{{ batch.expiration_date|date:'Y-m-d' }}">
+                                        {% if batch.expiration_date %}
+                                            {{ batch.expiration_date|date:"M d, Y" }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.location %}
+                                            <a href="{% url 'location_detail' batch.location.id %}">{{ batch.location.name }}</a>
+                                        {% else %}
+                                            <span class="text-muted">Not assigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.sale_price %}
+                                            ${{ batch.sale_price|floatformat:2 }}
+                                            {% if batch.discount %}
+                                                <span class="badge bg-danger">-{{ batch.discount }}%</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.total_value %}
+                                            ${{ batch.total_value|floatformat:2 }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'batch_detail' batch.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'batch_update' batch.id %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'batch_delete' batch.id %}" class="btn btn-sm btn-outline-danger delete-confirm"
+                                               data-name="Batch #{{ batch.id }}" data-type="batch">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No batches found for this product. <a href="{% url 'batch_create' %}?product_id={{ product.id }}">Add your first batch</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

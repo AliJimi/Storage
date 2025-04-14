@@ -1,0 +1,174 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Batches - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-boxes"></i> Batches
+        </h1>
+        <div>
+            <a href="{% url 'expiring_batches' %}" class="btn btn-warning me-2">
+                <i class="bi bi-exclamation-triangle"></i> Expiring Soon
+            </a>
+            <a href="{% url 'batch_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Batch
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">All Batches</h5>
+                </div>
+                <div class="col-md-4">
+                    <form method="get" class="d-flex">
+                        <input type="text" name="search" placeholder="Search batches..." class="form-control me-2" 
+                               value="{{ request.GET.search|default:'' }}">
+                        <button type="submit" class="btn btn-light">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if batches %}
+                <div class="mb-3">
+                    <form id="batchFilterForm" method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="productFilter" class="form-label">Product</label>
+                            <select name="product" id="productFilter" class="form-select">
+                                <option value="">All Products</option>
+                                {% for product in products %}
+                                    <option value="{{ product.id }}" {% if request.GET.product == product.id|stringformat:"i" %}selected{% endif %}>
+                                        {{ product.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="locationFilter" class="form-label">Location</label>
+                            <select name="location" id="locationFilter" class="form-select">
+                                <option value="">All Locations</option>
+                                {% for location in locations %}
+                                    <option value="{{ location.id }}" {% if request.GET.location == location.id|stringformat:"i" %}selected{% endif %}>
+                                        {{ location.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="statusFilter" class="form-label">Status</label>
+                            <select name="status" id="statusFilter" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="expired" {% if request.GET.status == 'expired' %}selected{% endif %}>Expired</option>
+                                <option value="expiring" {% if request.GET.status == 'expiring' %}selected{% endif %}>Expiring Soon</option>
+                                <option value="good" {% if request.GET.status == 'good' %}selected{% endif %}>Good</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="sortBy" class="form-label">Sort By</label>
+                            <select name="sort" id="sortBy" class="form-select">
+                                <option value="created" {% if request.GET.sort == 'created' or not request.GET.sort %}selected{% endif %}>Date Created</option>
+                                <option value="expiry" {% if request.GET.sort == 'expiry' %}selected{% endif %}>Expiration Date</option>
+                                <option value="quantity" {% if request.GET.sort == 'quantity' %}selected{% endif %}>Quantity</option>
+                                <option value="value" {% if request.GET.sort == 'value' %}selected{% endif %}>Value</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Batch ID</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Expiration Date</th>
+                                <th>Location</th>
+                                <th>Purchase Price</th>
+                                <th>Sale Price</th>
+                                <th>Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in batches %}
+                                <tr>
+                                    <td>{{ batch.id }}</td>
+                                    <td>
+                                        <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a>
+                                    </td>
+                                    <td>{{ batch.quantity }}</td>
+                                    <td class="expiration-date" data-date="{{ batch.expiration_date|date:'Y-m-d' }}">
+                                        {% if batch.expiration_date %}
+                                            {{ batch.expiration_date|date:"M d, Y" }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.location %}
+                                            <a href="{% url 'location_detail' batch.location.id %}">{{ batch.location.name }}</a>
+                                        {% else %}
+                                            <span class="text-muted">Not assigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.purchase_price %}
+                                            ${{ batch.purchase_price|floatformat:2 }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.sale_price %}
+                                            ${{ batch.sale_price|floatformat:2 }}
+                                            {% if batch.discount %}
+                                                <span class="badge bg-danger">-{{ batch.discount }}%</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.total_value %}
+                                            ${{ batch.total_value|floatformat:2 }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'batch_detail' batch.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'batch_update' batch.id %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'batch_delete' batch.id %}" class="btn btn-sm btn-outline-danger delete-confirm"
+                                               data-name="Batch #{{ batch.id }}" data-type="batch">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No batches found. <a href="{% url 'batch_create' %}">Add your first batch</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

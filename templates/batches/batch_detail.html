@@ -1,0 +1,227 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Batch #{{ batch.id }} - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'batch_list' %}">Batches</a></li>
+            <li class="breadcrumb-item active">Batch #{{ batch.id }}</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-0">
+                <i class="bi bi-box"></i> Batch #{{ batch.id }}
+                <span class="ms-2 badge bg-{{ expiry_class }}">{{ expiry_status }}</span>
+            </h1>
+            <p class="text-muted">
+                Product: <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a> | 
+                Created: {{ batch.created_at|date:"F j, Y" }}
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="btn-group">
+                <a href="{% url 'batch_update' batch.id %}" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'product_detail' batch.product.id %}" class="btn btn-info">
+                    <i class="bi bi-box"></i> View Product
+                </a>
+                <a href="{% url 'batch_delete' batch.id %}" class="btn btn-danger delete-confirm" 
+                   data-name="Batch #{{ batch.id }}" data-type="batch">
+                    <i class="bi bi-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Batch Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Product:</h6>
+                            <p>
+                                <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a>
+                                <small class="text-muted d-block">{{ batch.product.get_category_display }}</small>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Quantity:</h6>
+                            <p>{{ batch.quantity }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Expiration Date:</h6>
+                            <p class="expiration-date" data-date="{{ batch.expiration_date|date:'Y-m-d' }}">
+                                {% if batch.expiration_date %}
+                                    {{ batch.expiration_date|date:"F j, Y" }}
+                                {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Location:</h6>
+                            <p>
+                                {% if batch.location %}
+                                    <a href="{% url 'location_detail' batch.location.id %}">{{ batch.location.name }}</a>
+                                    <small class="text-muted d-block">{{ batch.location.get_level_display }}</small>
+                                {% else %}
+                                    <span class="text-muted">Not assigned</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if batch.min_temperature or batch.max_temperature %}
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h6>Temperature Range:</h6>
+                                <p>
+                                    {% if batch.min_temperature %}{{ batch.min_temperature }}°C{% else %}--{% endif %} to 
+                                    {% if batch.max_temperature %}{{ batch.max_temperature }}°C{% else %}--{% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h6>Metadata:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Created:</strong> {{ batch.created_at|date:"F j, Y, g:i a" }}</li>
+                                <li><strong>Last Updated:</strong> {{ batch.updated_at|date:"F j, Y, g:i a" }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Financial Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Purchase Price:</h6>
+                            <p>
+                                {% if batch.purchase_price %}
+                                    ${{ batch.purchase_price|floatformat:2 }}
+                                    <small class="text-muted d-block">per unit</small>
+                                {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Sale Price:</h6>
+                            <p>
+                                {% if batch.sale_price %}
+                                    ${{ batch.sale_price|floatformat:2 }}
+                                    <small class="text-muted d-block">per unit</small>
+                                {% else %}
+                                    <span class="text-muted">Not specified</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6>Discount:</h6>
+                            <p>
+                                {% if batch.discount > 0 %}
+                                    <span class="badge bg-danger">{{ batch.discount }}%</span>
+                                {% else %}
+                                    <span class="text-muted">No discount</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Effective Price:</h6>
+                            <p>
+                                {% if effective_price %}
+                                    ${{ effective_price|floatformat:2 }}
+                                    <small class="text-muted d-block">per unit after discount</small>
+                                {% else %}
+                                    <span class="text-muted">Not available</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <h3>Total Batch Value</h3>
+                        <div class="display-4 fw-bold text-success">
+                            ${{ total_value|floatformat:2 }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if batch.product.is_edible and batch.nutrition_data %}
+        <div class="card mb-4">
+            <div class="card-header bg-info text-dark">
+                <h5 class="mb-0">
+                    <i class="bi bi-egg"></i> Nutrition Data Override
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <h6>Serving Size:</h6>
+                        <p>{{ batch.nutrition_data.serving_size }}</p>
+                    </div>
+                    <div class="col-md-9">
+                        <h6>Nutritional Values (Per Serving):</h6>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Calories:</strong> {{ batch.nutrition_data.calories_per_serving }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Protein:</strong> {{ batch.nutrition_data.protein_per_serving }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Fat:</strong> {{ batch.nutrition_data.fat_per_serving }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Carbs:</strong> {{ batch.nutrition_data.carbs_per_serving }}
+                            </div>
+                        </div>
+                        
+                        {% if batch.nutrition_data.ingredients or batch.nutrition_data.allergens %}
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <h6>Ingredients:</h6>
+                                    <p>{{ batch.nutrition_data.ingredients|default:"Not specified" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Allergens:</h6>
+                                    <p>{{ batch.nutrition_data.allergens|default:"None listed" }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

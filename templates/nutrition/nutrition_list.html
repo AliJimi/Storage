@@ -1,0 +1,117 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Nutrition Data - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-egg"></i> Nutrition Data
+        </h1>
+        <div>
+            <a href="{% url 'nutrition_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Nutrition Data
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">Nutritional Information</h5>
+                </div>
+                <div class="col-md-4">
+                    <form method="get" class="d-flex">
+                        <input type="text" name="search" placeholder="Search nutrition data..." class="form-control me-2" 
+                               value="{{ request.GET.search|default:'' }}">
+                        <button type="submit" class="btn btn-light">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if nutrition_data_list %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Serving Size</th>
+                                <th>Calories</th>
+                                <th>Protein</th>
+                                <th>Fat</th>
+                                <th>Carbs</th>
+                                <th>Allergens</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nutrition in nutrition_data_list %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'product_detail' nutrition.product.id %}">{{ nutrition.product.name }}</a>
+                                    </td>
+                                    <td>{{ nutrition.serving_size }}</td>
+                                    <td>{{ nutrition.calories_per_serving }}</td>
+                                    <td>{{ nutrition.protein_per_serving }}</td>
+                                    <td>{{ nutrition.fat_per_serving }}</td>
+                                    <td>{{ nutrition.carbs_per_serving }}</td>
+                                    <td>
+                                        {% if nutrition.allergens %}
+                                            <span class="badge bg-warning text-dark">Has Allergens</span>
+                                        {% else %}
+                                            <span class="badge bg-success">None Listed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'nutrition_detail' nutrition.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'nutrition_update' nutrition.id %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'nutrition_delete' nutrition.id %}" class="btn btn-sm btn-outline-danger delete-confirm"
+                                               data-name="{{ nutrition.product.name }}" data-type="nutrition data">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No nutrition data found. <a href="{% url 'nutrition_create' %}">Add your first nutrition data</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card mt-4">
+        <div class="card-header bg-info text-dark">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> About Nutrition Data</h5>
+        </div>
+        <div class="card-body">
+            <p>
+                Nutrition data is used for edible products to track their nutritional content, ingredients, and allergens. This information is important for:
+            </p>
+            <ul>
+                <li>Compliance with food labeling regulations</li>
+                <li>Providing accurate information to customers</li>
+                <li>Tracking allergens and potential health risks</li>
+                <li>Managing dietary requirements for different use cases</li>
+            </ul>
+            <p>
+                Each product with <span class="badge bg-success">Edible</span> status can have nutrition data attached to it. Additionally, specific batches can override the default nutrition data if their composition varies from the standard.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

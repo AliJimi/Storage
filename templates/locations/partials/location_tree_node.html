@@ -1,0 +1,38 @@
+{% load static %}
+
+<li>
+    <div class="d-flex align-items-center mb-2">
+        <a href="{% url 'location_detail' location.id %}" class="me-2">
+            <strong>{{ location.name }}</strong>
+        </a>
+        <span class="badge bg-info me-2">{{ location.get_level_display }}</span>
+        
+        {% if location.capacity %}
+            <span class="badge bg-secondary me-2">
+                {{ location.capacity }} {{ location.capacity_unit }}
+            </span>
+        {% endif %}
+        
+        <div class="ms-auto">
+            <div class="btn-group btn-group-sm">
+                <a href="{% url 'location_detail' location.id %}" class="btn btn-outline-primary">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <a href="{% url 'batch_list_by_location' location.id %}" class="btn btn-outline-info">
+                    <i class="bi bi-boxes"></i>
+                </a>
+                <a href="{% url 'location_update' location.id %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-pencil"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    {% if location.children.all %}
+        <ul>
+            {% for child in location.children.all %}
+                {% include "locations/partials/location_tree_node.html" with location=child %}
+            {% endfor %}
+        </ul>
+    {% endif %}
+</li>

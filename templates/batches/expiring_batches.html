@@ -1,0 +1,154 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Expiring Batches - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'batch_list' %}">Batches</a></li>
+            <li class="breadcrumb-item active">Expiring Soon</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-exclamation-triangle"></i> Expiring Batches
+        </h1>
+        <div>
+            <a href="{% url 'batch_list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-boxes"></i> All Batches
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Filter Options</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="daysFilter" class="form-label">Expiring Within (days):</label>
+                            <select name="days" id="daysFilter" class="form-select" onchange="this.form.submit()">
+                                <option value="3" {% if days == 3 %}selected{% endif %}>3 days</option>
+                                <option value="7" {% if days == 7 %}selected{% endif %}>7 days</option>
+                                <option value="14" {% if days == 14 %}selected{% endif %}>14 days</option>
+                                <option value="30" {% if days == 30 %}selected{% endif %}>30 days</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">{{ title }}</h5>
+        </div>
+        <div class="card-body">
+            {% if batches %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Batch ID</th>
+                                <th>Quantity</th>
+                                <th>Expiration Date</th>
+                                <th>Days Left</th>
+                                <th>Location</th>
+                                <th>Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in batches %}
+                                {% with days_left=batch.expiration_date|timeuntil %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a>
+                                    </td>
+                                    <td>{{ batch.id }}</td>
+                                    <td>{{ batch.quantity }}</td>
+                                    <td class="expiration-date" data-date="{{ batch.expiration_date|date:'Y-m-d' }}">
+                                        {{ batch.expiration_date|date:"M d, Y" }}
+                                    </td>
+                                    <td>
+                                        {% with days_left=batch.expiration_date|timeuntil %}
+                                            {% if "day" in days_left %}
+                                                <span class="badge bg-warning">{{ days_left }}</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">{{ days_left }}</span>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        {% if batch.location %}
+                                            <a href="{% url 'location_detail' batch.location.id %}">{{ batch.location.name }}</a>
+                                        {% else %}
+                                            <span class="text-muted">Not assigned</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if batch.total_value %}
+                                            ${{ batch.total_value|floatformat:2 }}
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'batch_detail' batch.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{% url 'batch_update' batch.id %}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="{% url 'batch_delete' batch.id %}" class="btn btn-sm btn-outline-danger delete-confirm"
+                                               data-name="Batch #{{ batch.id }}" data-type="batch">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> Great news! No batches are expiring within the next {{ days }} days.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if batches %}
+        <div class="card mt-4">
+            <div class="card-header bg-info text-dark">
+                <h5 class="mb-0"><i class="bi bi-lightbulb"></i> Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <strong>Apply Discounts:</strong> Consider applying discounts to products expiring soon to increase sales.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Relocate Inventory:</strong> Move expiring items to more visible locations to prioritize their sale.
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Update Inventory Plan:</strong> Review ordering patterns to avoid future expiration issues.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

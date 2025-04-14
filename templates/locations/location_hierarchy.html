@@ -1,0 +1,48 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Location Hierarchy - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'location_list' %}">Locations</a></li>
+            <li class="breadcrumb-item active">Location Hierarchy</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-diagram-3"></i> Location Hierarchy
+        </h1>
+        <div>
+            <a href="{% url 'location_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Location
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Organizational Structure</h5>
+        </div>
+        <div class="card-body">
+            {% if root_locations %}
+                <div class="location-tree">
+                    <ul>
+                        {% for location in root_locations %}
+                            {% include "locations/partials/location_tree_node.html" with location=location %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No locations defined yet. <a href="{% url 'location_create' %}">Add your first location</a>.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

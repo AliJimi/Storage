@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Delete Batch #{{ batch.id }} - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'batch_list' %}">Batches</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'batch_detail' batch.id %}">Batch #{{ batch.id }}</a></li>
+            <li class="breadcrumb-item active">Delete</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-trash"></i> Delete Batch
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle"></i> Warning!
+                </h4>
+                <p>
+                    Are you sure you want to delete Batch #{{ batch.id }} of <strong>{{ batch.product.name }}</strong>?
+                    This action cannot be undone and will permanently remove the batch from inventory.
+                </p>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Quantity:</strong> {{ batch.quantity }}<br>
+                        {% if batch.expiration_date %}
+                            <strong>Expiration Date:</strong> {{ batch.expiration_date|date:"F j, Y" }}<br>
+                        {% endif %}
+                        {% if batch.location %}
+                            <strong>Location:</strong> {{ batch.location.name }}<br>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        {% if batch.purchase_price %}
+                            <strong>Purchase Price:</strong> ${{ batch.purchase_price|floatformat:2 }}<br>
+                        {% endif %}
+                        {% if batch.sale_price %}
+                            <strong>Sale Price:</strong> ${{ batch.sale_price|floatformat:2 }}<br>
+                        {% endif %}
+                        {% if batch.total_value %}
+                            <strong>Total Value:</strong> ${{ batch.total_value|floatformat:2 }}<br>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Yes, Delete
+                    </button>
+                    <a href="{% url 'batch_detail' batch.id %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

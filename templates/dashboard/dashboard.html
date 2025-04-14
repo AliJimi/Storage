@@ -1,0 +1,235 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Inventory Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </h1>
+        <div>
+            <a href="{% url 'product_create' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Add Product
+            </a>
+            <a href="{% url 'batch_create' %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Add Batch
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon text-primary">
+                    <i class="bi bi-box"></i>
+                </div>
+                <div class="stat-value">{{ stats.total_products }}</div>
+                <div class="stat-label">Total Products</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon text-success">
+                    <i class="bi bi-boxes"></i>
+                </div>
+                <div class="stat-value">{{ stats.active_batches }}</div>
+                <div class="stat-label">Active Batches</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon text-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div class="stat-value">{{ stats.low_stock_items }}</div>
+                <div class="stat-label">Low Stock Items</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-icon text-danger">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="stat-value">{{ stats.expiring_soon }}</div>
+                <div class="stat-label">Expiring Soon</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Products -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-box"></i> Recent Products</h5>
+                    <a href="{% url 'product_list' %}" class="btn btn-sm btn-light">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_products %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Barcode</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for product in recent_products %}
+                                        <tr>
+                                            <td>
+                                                {% if product.image %}
+                                                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-thumbnail me-2">
+                                                {% else %}
+                                                    <i class="bi bi-box me-2"></i>
+                                                {% endif %}
+                                                {{ product.name }}
+                                            </td>
+                                            <td>{{ product.get_category_display }}</td>
+                                            <td>{{ product.barcode }}</td>
+                                            <td>
+                                                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'batch_create' %}?product_id={{ product.id }}" class="btn btn-sm btn-outline-success">
+                                                    <i class="bi bi-plus-circle"></i> Add Batch
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            No products added yet. <a href="{% url 'product_create' %}">Add your first product</a>.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Expiring Batches -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Expiring Soon</h5>
+                    <a href="{% url 'expiring_batches' %}" class="btn btn-sm btn-dark">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if expiring_batches %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Expiration</th>
+                                        <th>Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for batch in expiring_batches %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a>
+                                            </td>
+                                            <td>{{ batch.quantity }}</td>
+                                            <td class="expiration-date" data-date="{{ batch.expiration_date|date:'Y-m-d' }}">
+                                                {{ batch.expiration_date|date:"M d, Y" }}
+                                            </td>
+                                            <td>
+                                                {% if batch.location %}
+                                                    <a href="{% url 'location_detail' batch.location.id %}">{{ batch.location.name }}</a>
+                                                {% else %}
+                                                    <span class="text-muted">Not assigned</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-success">
+                            No batches expiring soon. Excellent inventory management!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Overview -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Location Overview</h5>
+                    <a href="{% url 'location_list' %}" class="btn btn-sm btn-dark">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if locations %}
+                        <div class="row">
+                            {% for location in locations %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ location.name }}</h5>
+                                            <p class="card-text">
+                                                <strong>Capacity:</strong> 
+                                                {% if location.capacity %}
+                                                    {{ location.capacity }} {{ location.capacity_unit }}
+                                                {% else %}
+                                                    Not specified
+                                                {% endif %}
+                                            </p>
+                                            <p class="card-text">
+                                                <strong>Utilization:</strong><br>
+                                                <div class="progress">
+                                                    <div class="progress-bar" role="progressbar" 
+                                                         style="width: {{ location.utilization }}%" 
+                                                         aria-valuenow="{{ location.utilization }}" 
+                                                         aria-valuemin="0" 
+                                                         aria-valuemax="100">
+                                                        {{ location.utilization }}%
+                                                    </div>
+                                                </div>
+                                            </p>
+                                            <a href="{% url 'location_detail' location.id %}" class="btn btn-sm btn-primary">View Details</a>
+                                            <a href="{% url 'batch_list_by_location' location.id %}" class="btn btn-sm btn-info">View Batches</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            No warehouse locations added yet. <a href="{% url 'location_create' %}">Add your first location</a>.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Inventory Value -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-currency-dollar"></i> Total Inventory Value</h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 text-center">${{ stats.total_value|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if location %}Edit{% else %}Add{% endif %} Location - Inventory Management System
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'location_list' %}">Locations</a></li>
+            <li class="breadcrumb-item active">{% if location %}Edit{% else %}Add{% endif %} Location</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-{% if location %}pencil{% else %}plus-circle{% endif %}"></i>
+                {{ title }}
+            </h5>
+        </div>
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Save
+                    </button>
+                    <a href="{% if location %}{% url 'location_detail' location.id %}{% else %}{% url 'location_list' %}{% endif %}" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show/hide fields based on selected location level
+        const levelSelect = document.querySelector('#id_level');
+        const parentField = document.querySelector('#div_id_parent');
+        const capacityFields = document.querySelector('#div_id_capacity').parentNode;
+        
+        if (levelSelect) {
+            levelSelect.addEventListener('change', function() {
+                const level = levelSelect.value;
+                
+                // Parent field is not relevant for top-level locations
+                if (level === 'world') {
+                    parentField.style.display = 'none';
+                } else {
+                    parentField.style.display = 'block';
+                }
+                
+                // Capacity is more relevant for physical storage locations
+                if (['warehouse', 'section', 'shelf', 'cabinet'].includes(level)) {
+                    capacityFields.style.display = 'block';
+                } else {
+                    capacityFields.style.display = 'none';
+                }
+            });
+            
+            // Trigger on load
+            levelSelect.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
+{% endblock %}

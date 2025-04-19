@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.db.models import Sum
 
 from .models import Product
-from .forms import ProductForm
+from products.forms import ProductForm
 from batches.models import ProductBatch
 from nutrition.models import NutritionData
 

@@ -13,7 +13,7 @@
             <a href="{% url 'product_create' %}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Add Product
             </a>
-            <a href="{% url 'batch_create' %}" class="btn btn-success">
+            <a href="{% url 'batches:batch_create' %}" class="btn btn-success">
                 <i class="bi bi-plus-circle"></i> Add Batch
             </a>
         </div>
@@ -96,7 +96,7 @@
                                                 <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-outline-primary">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="{% url 'batch_create' %}?product_id={{ product.id }}" class="btn btn-sm btn-outline-success">
+                                                <a href="{% url 'batches:batch_create' %}?product_id={{ product.id }}" class="btn btn-sm btn-outline-success">
                                                     <i class="bi bi-plus-circle"></i> Add Batch
                                                 </a>
                                             </td>
@@ -119,7 +119,7 @@
             <div class="card h-100">
                 <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Expiring Soon</h5>
-                    <a href="{% url 'expiring_batches' %}" class="btn btn-sm btn-dark">View All</a>
+                    <a href="{% url 'batches:expiring_batches' %}" class="btn btn-sm btn-dark">View All</a>
                 </div>
                 <div class="card-body">
                     {% if expiring_batches %}

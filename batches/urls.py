@@ -1,6 +1,9 @@
 from django.urls import path
 from . import views
 
+
+app_name = 'batches'
+
 urlpatterns = [
     path('', views.batch_list, name='batch_list'),
     path('create/', views.batch_create, name='batch_create'),

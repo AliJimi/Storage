@@ -11,7 +11,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'batch_list' %}">Batches</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'batches:batch_list' %}">Batches</a></li>
             <li class="breadcrumb-item active">{% if batch %}Edit{% else %}Add{% endif %} Batch</li>
         </ol>
     </nav>
@@ -93,7 +93,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Save
                     </button>
-                    <a href="{% if batch %}{% url 'batch_detail' batch.id %}{% else %}{% url 'batch_list' %}{% endif %}" class="btn btn-outline-secondary">
+                    <a href="{% if batch %}{% url 'batches:batch_detail' batch.id %}{% else %}{% url 'batches:batch_list' %}{% endif %}" class="btn btn-outline-secondary">
                         Cancel
                     </a>
                 </div>

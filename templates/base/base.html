@@ -40,7 +40,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if '/batches/' in request.path %}active{% endif %}" href="{% url 'batch_list' %}">
+                        <a class="nav-link {% if '/batches/' in request.path %}active{% endif %}" href="{% url 'batches:batch_list' %}">
                             <i class="bi bi-boxes"></i> Batches
                         </a>
                     </li>
@@ -56,7 +56,7 @@
                     </li>
                 </ul>
                 <div class="d-flex">
-                    <a href="{% url 'expiring_batches' %}" class="btn btn-warning me-2">
+                    <a href="{% url 'batches:expiring_batches' %}" class="btn btn-warning me-2">
                         <i class="bi bi-exclamation-triangle"></i> Expiring Soon
                     </a>
                     <a href="{% url 'admin:index' %}" class="btn btn-outline-light">

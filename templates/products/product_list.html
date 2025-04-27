@@ -10,7 +10,7 @@
             <i class="bi bi-box"></i> Products
         </h1>
         <div>
-            <a href="{% url 'product_create' %}" class="btn btn-primary">
+            <a href="{% url 'products:product_create' %}" class="btn btn-primary">
                 <i class="bi bi-plus-circle"></i> Add Product
             </a>
         </div>
@@ -57,7 +57,7 @@
                                         {% else %}
                                             <i class="bi bi-box me-2"></i>
                                         {% endif %}
-                                        <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+                                        <a href="{% url 'products:product_detail' product.id %}">{{ product.name }}</a>
                                     </td>
                                     <td>{{ product.get_category_display }}</td>
                                     <td>{{ product.barcode }}</td>
@@ -80,13 +80,13 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{% url 'products:product_detail' product.id %}" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-eye"></i>
                                             </a>
-                                            <a href="{% url 'product_update' product.id %}" class="btn btn-sm btn-outline-secondary">
+                                            <a href="{% url 'products:product_update' product.id %}" class="btn btn-sm btn-outline-secondary">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <a href="{% url 'batch_create' %}?product_id={{ product.id }}" class="btn btn-sm btn-outline-success">
+                                            <a href="{% url 'batches:batch_create' %}?product_id={{ product.id }}" class="btn btn-sm btn-outline-success">
                                                 <i class="bi bi-plus-circle"></i>
                                             </a>
                                             {% if product.is_edible %}
@@ -103,7 +103,7 @@
                 </div>
             {% else %}
                 <div class="alert alert-info">
-                    No products found. <a href="{% url 'product_create' %}">Add your first product</a>.
+                    No products found. <a href="{% url 'products:product_create' %}">Add your first product</a>.
                 </div>
             {% endif %}
         </div>

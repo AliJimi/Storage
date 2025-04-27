@@ -11,7 +11,7 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'product_list' %}">Products</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
             <li class="breadcrumb-item active">{% if product %}Edit{% else %}Add{% endif %} Product</li>
         </ol>
     </nav>
@@ -31,7 +31,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Save
                     </button>
-                    <a href="{% if product %}{% url 'product_detail' product.id %}{% else %}{% url 'product_list' %}{% endif %}" class="btn btn-outline-secondary">
+                    <a href="{% if product %}{% url 'product_detail' product.id %}{% else %}{% url 'products:product_list' %}{% endif %}" class="btn btn-outline-secondary">
                         Cancel
                     </a>
                 </div>

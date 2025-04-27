@@ -7,128 +7,145 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{% url 'batches:batch_list' %}">Batches</a></li>
-            <li class="breadcrumb-item active">{% if batch %}Edit{% else %}Add{% endif %} Batch</li>
-        </ol>
-    </nav>
+    <div class="container-fluid">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'batches:batch_list' %}">Batches</a></li>
+                <li class="breadcrumb-item active">{% if batch %}Edit{% else %}Add{% endif %} Batch</li>
+            </ol>
+        </nav>
 
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">
-                <i class="bi bi-{% if batch %}pencil{% else %}plus-circle{% endif %}"></i>
-                {{ title }}
-            </h5>
-        </div>
-        <div class="card-body">
-            <form method="post" novalidate>
-                {% csrf_token %}
-                
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h6 class="mb-0">Basic Information</h6>
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-{% if batch %}pencil{% else %}plus-circle{% endif %}"></i>
+                    {{ title }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h6 class="mb-0">Basic Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for field in form %}
+                                        {% if field.name == 'product' or field.name == 'quantity' or field.name == 'expiration_date' or field.name == 'location' %}
+                                            <div class="mb-3">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                            <div class="card-body">
-                                {% for field in form %}
-                                    {% if field.name in 'product,quantity,expiration_date,location' %}
-                                        {{ field|crispy }}
-                                    {% endif %}
-                                {% endfor %}
+
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-dark">
+                                    <h6 class="mb-0">Temperature Requirements</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for field in form %}
+                                        {% if field.name == 'min_temperature' or field.name == 'max_temperature' %}
+                                            <div class="mb-3">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="card mb-4">
-                            <div class="card-header bg-info text-dark">
-                                <h6 class="mb-0">Temperature Requirements</h6>
+
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-success text-white">
+                                    <h6 class="mb-0">Pricing Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    {% for field in form %}
+                                        {% if field.name == 'purchase_price' or field.name == 'sale_price' or field.name == 'discount' %}
+                                            <div class="mb-3">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                            <div class="card-body">
-                                {% for field in form %}
-                                    {% if field.name in 'min_temperature,max_temperature' %}
-                                        {{ field|crispy }}
-                                    {% endif %}
-                                {% endfor %}
+
+                            <div class="card mb-4">
+                                <div class="card-header bg-warning text-dark">
+                                    <h6 class="mb-0">Nutrition Information Override</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted small mb-3">
+                                        If this batch has different nutrition information than the product's default,
+                                        you can select a specific nutrition data record here.
+                                    </p>
+                                    {% for field in form %}
+                                        {% if field.name == 'nutrition_data' %}
+                                            <div class="mb-3">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                                {{ field.errors }}
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-md-6">
-                        <div class="card mb-4">
-                            <div class="card-header bg-success text-white">
-                                <h6 class="mb-0">Pricing Information</h6>
-                            </div>
-                            <div class="card-body">
-                                {% for field in form %}
-                                    {% if field.name in 'purchase_price,sale_price,discount' %}
-                                        {{ field|crispy }}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
-                        
-                        <div class="card mb-4">
-                            <div class="card-header bg-warning text-dark">
-                                <h6 class="mb-0">Nutrition Information Override</h6>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small mb-3">
-                                    If this batch has different nutrition information than the product's default,
-                                    you can select a specific nutrition data record here.
-                                </p>
-                                {% for field in form %}
-                                    {% if field.name in 'nutrition_data' %}
-                                        {{ field|crispy }}
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save
+                        </button>
+                        <a href="{% if batch %}{% url 'batches:batch_detail' batch.id %}{% else %}{% url 'batches:batch_list' %}{% endif %}"
+                           class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
                     </div>
-                </div>
-                
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-save"></i> Save
-                    </button>
-                    <a href="{% if batch %}{% url 'batches:batch_detail' batch.id %}{% else %}{% url 'batches:batch_list' %}{% endif %}" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // When the product changes, we should update the nutrition data options
-        const productSelect = document.querySelector('#id_product');
-        const nutritionSelect = document.querySelector('#id_nutrition_data');
-        
-        if (productSelect && nutritionSelect) {
-            productSelect.addEventListener('change', function() {
-                const productId = this.value;
-                if (!productId) {
-                    // Clear nutrition data options if no product selected
-                    nutritionSelect.innerHTML = '<option value="">---------</option>';
-                    return;
-                }
-                
-                // This would normally involve an AJAX call to get nutrition data for this product
-                // But for simplicity, we'll just redirect when the form is submitted
-                
-                // Disable the nutrition field if the product has no nutrition data yet
-                // In a real implementation, we would check if the product is edible here
-            });
-            
-            // Trigger on load
-            productSelect.dispatchEvent(new Event('change'));
-        }
-    });
-</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // When the product changes, we should update the nutrition data options
+            const productSelect = document.querySelector('#id_product');
+            const nutritionSelect = document.querySelector('#id_nutrition_data');
+
+            if (productSelect && nutritionSelect) {
+                productSelect.addEventListener('change', function () {
+                    const productId = this.value;
+                    if (!productId) {
+                        // Clear nutrition data options if no product selected
+                        nutritionSelect.innerHTML = '<option value="">---------</option>';
+                        return;
+                    }
+
+                    // This would normally involve an AJAX call to get nutrition data for this product
+                    // But for simplicity, we'll just redirect when the form is submitted
+
+                    // Disable the nutrition field if the product has no nutrition data yet
+                    // In a real implementation, we would check if the product is edible here
+                });
+
+                // Trigger on load
+                productSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
 {% endblock %}

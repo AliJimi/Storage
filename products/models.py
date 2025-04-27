@@ -53,6 +53,8 @@ class Product(models.Model):
     is_edible = models.BooleanField(default=False)
     description = models.TextField(null=True, blank=True)
 
+    quantity = models.IntegerField(default=0)
+
     # Image handling
     def product_image_path(self, filename):
         # Generate a unique filename using UUID
@@ -66,7 +68,7 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return self.name_en
 
     @property
     def total_quantity(self):

@@ -80,12 +80,12 @@ def nutrition_delete(request, pk):
     return render(request, 'nutrition/nutrition_confirm_delete.html', context)
 
 def nutrition_by_product(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
+    product = get_object_or_404(Product, id=product_id)
     
     try:
         nutrition = NutritionData.objects.get(product=product)
         return redirect('nutrition_detail', pk=nutrition.pk)
     except NutritionData.DoesNotExist:
         # If nutrition data doesn't exist for this product, redirect to create
-        messages.info(request, f'No nutrition data found for {product.name}. Create new data below.')
+        messages.info(request, f'No nutrition data found for {product.name_en}. Create new data below.')
         return redirect(f"{reverse('nutrition_create')}?product_id={product_id}")

@@ -28,10 +28,16 @@ class ProductForm(forms.ModelForm):
                 Column('is_edible', css_class='col-md-6 d-flex align-items-center'),
                 css_class='mb-3'
             ),
-            'description',
-            'image',
+            Row(
+                Column('description', css_class='col-12'),
+                css_class='mb-3'
+            ),
+            Row(
+                Column('image', css_class='col-12'),
+                css_class='mb-3'
+            ),
             Div(
-                Submit('submit', 'Save', css_class='btn-primary me-2'),
+                Submit('submit', 'Save', css_class='btn btn-primary me-2'),
                 css_class='mt-4'
             )
         )

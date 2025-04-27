@@ -8,13 +8,33 @@ class BatchForm(forms.ModelForm):
     class Meta:
         model = ProductBatch
         fields = [
-            'product', 'quantity', 'expiration_date', 
-            'location', 'min_temperature', 'max_temperature',
-            'purchase_price', 'sale_price', 'discount',
+            'product',
+            'quantity',
+            'expiration_date',
+            'location',
+            'min_temperature',
+            'max_temperature',
+            'purchase_price',
+            'sale_price',
+            'discount',
             'nutrition_data'
         ]
+
         widgets = {
             'expiration_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+        labels = {
+            'product': 'Select Product',
+            'quantity': 'Total Quantity (in units)',
+            'expiration_date': 'Expiration Date (YYYY-MM-DD)',
+            'location': 'Storage Location',
+            'min_temperature': 'Minimum Storage Temp (°C)',
+            'max_temperature': 'Maximum Storage Temp (°C)',
+            'purchase_price': 'Purchase Price ($)',
+            'sale_price': 'Sale Price ($)',
+            'discount': 'Discount (%)',
+            'nutrition_data': 'Override Nutrition Info',
         }
     
     def __init__(self, *args, **kwargs):

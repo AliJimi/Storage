@@ -9,19 +9,15 @@ from batches.models import ProductBatch
 from nutrition.models import NutritionData
 
 def product_list(request):
-    products = Product.objects.all().order_by('name')
-    
-    # Add total quantity information
-    for product in products:
-        product.total_quantity = product.total_quantity
-    
+    products = Product.objects.all().order_by('name_en')
+
     context = {
         'products': products
     }
     return render(request, 'products/product_list.html', context)
 
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
     
     # Get batches for this product
     batches = ProductBatch.objects.filter(product=product).order_by('-created_at')
@@ -55,7 +51,7 @@ def product_create(request):
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             product = form.save()
-            messages.success(request, f'Product "{product.name}" created successfully.')
+            messages.success(request, f'Product "{product.name_en}" created successfully.')
             return redirect('product_detail', pk=product.pk)
     else:
         form = ProductForm()
@@ -67,15 +63,15 @@ def product_create(request):
     
     return render(request, 'products/product_form.html', context)
 
-def product_update(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def product_update(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
     
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
             form.save()
-            messages.success(request, f'Product "{product.name}" updated successfully.')
-            return redirect('product_detail', pk=product.pk)
+            messages.success(request, f'Product "{product.name_en}" updated successfully.')
+            return redirect('products:product_detail', id=product.id)
     else:
         form = ProductForm(instance=product)
     
@@ -87,14 +83,14 @@ def product_update(request, pk):
     
     return render(request, 'products/product_form.html', context)
 
-def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
+def product_delete(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
     
     if request.method == 'POST':
-        product_name = product.name
+        product_name = product.name_en
         product.delete()
         messages.success(request, f'Product "{product_name}" deleted successfully.')
-        return redirect('product_list')
+        return redirect('products:product_list')
     
     context = {
         'product': product

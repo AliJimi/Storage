@@ -31,7 +31,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Save
                     </button>
-                    <a href="{% if product %}{% url 'product_detail' product.id %}{% else %}{% url 'products:product_list' %}{% endif %}" class="btn btn-outline-secondary">
+                    <a href="{% if product %}{% url 'products:product_detail' product.id %}{% else %}{% url 'products:product_list' %}{% endif %}" class="btn btn-outline-secondary">
                         Cancel
                     </a>
                 </div>

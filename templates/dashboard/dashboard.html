@@ -137,7 +137,7 @@
                                     {% for batch in expiring_batches %}
                                         <tr>
                                             <td>
-                                                <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a>
+                                                <a href="{% url 'products:product_detail' batch.product.id %}">{{ batch.product.name }}</a>
                                             </td>
                                             <td>{{ batch.quantity }}</td>
                                             <td class="expiration-date" data-date="{{ batch.expiration_date|date:'Y-m-d' }}">

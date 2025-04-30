@@ -53,7 +53,7 @@
                             {% for nutrition in nutrition_data_list %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'product_detail' nutrition.product.id %}">{{ nutrition.product.name }}</a>
+                                        <a href="{% url 'products:product_detail' nutrition.product.id %}">{{ nutrition.product.name }}</a>
                                     </td>
                                     <td>{{ nutrition.serving_size }}</td>
                                     <td>{{ nutrition.calories_per_serving }}</td>

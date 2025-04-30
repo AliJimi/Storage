@@ -52,7 +52,7 @@ def product_create(request):
         if form.is_valid():
             product = form.save()
             messages.success(request, f'Product "{product.name_en}" created successfully.')
-            return redirect('product_detail', pk=product.pk)
+            return redirect('products:product_detail', pk=product.pk)
     else:
         form = ProductForm()
     

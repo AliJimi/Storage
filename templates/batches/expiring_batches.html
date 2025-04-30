@@ -72,7 +72,7 @@
                                 {% with days_left=batch.expiration_date|timeuntil %}
                                 <tr>
                                     <td>
-                                        <a href="{% url 'product_detail' batch.product.id %}">{{ batch.product.name }}</a>
+                                        <a href="{% url 'products:product_detail' batch.product.id %}">{{ batch.product.name }}</a>
                                     </td>
                                     <td>{{ batch.id }}</td>
                                     <td>{{ batch.quantity }}</td>
